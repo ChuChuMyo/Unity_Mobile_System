@@ -51,8 +51,8 @@ public class BaseUI : MonoBehaviour
     public virtual void SetInfo(BaseUIData uiData)
     {
         Logger.Log($"{GetType()} set info ");
-        m_OnShow += uiData.OnShow;
-        m_OnClose += uiData.OnClose;
+        m_OnShow = uiData.OnShow;
+        m_OnClose = uiData.OnClose;
     }
 
     //UI 화면을 실제로 열어서 화면에 표시해 주는 함수

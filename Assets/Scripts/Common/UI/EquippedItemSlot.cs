@@ -8,6 +8,8 @@ public class EquippedItemSlot : MonoBehaviour
 {
     //장착된 아이템이 없을 때 표시해줄 [+]아이콘 변수
     public Image AddIcon;
+    //등급 이미지 컴포넌트 변수
+    public Image EquippedItemGradeBg; 
     //장착된 아이템이 있을 때 표시해줄 아이콘 변수
     public Image EquippedItemIcon;
     //장착된 아이템 데이터를 저장할 변수
@@ -19,7 +21,17 @@ public class EquippedItemSlot : MonoBehaviour
         m_EquippedItemData = userItemData;
 
         AddIcon.gameObject.SetActive(false); //장착된 아이템이 없을 때 표시해줄 [+]아이콘 비활성화
+        EquippedItemGradeBg.gameObject.SetActive(true);
         EquippedItemIcon.gameObject.SetActive(true); //장착된 아이템이 있을 때 표시해줄 아이템 아이콘 활성화
+
+
+        //아이템 등급에 맞는 이미지 로드해서 셋팅
+        var itemGrade = (ItemGrade)((m_EquippedItemData.ItemId / 1000) % 10);
+        var gradeBgTexture = Resources.Load<Texture2D>($"Textures/{itemGrade}");
+        if(gradeBgTexture != null)
+        {
+            EquippedItemGradeBg.sprite = Sprite.Create(gradeBgTexture, new Rect(0, 0, gradeBgTexture.width, gradeBgTexture.height), new Vector2(1f, 1f));
+        }
 
         //아이템ID에 맞는 이미지를 로드해서 아이템 컴포넌트에 세팅
         //텍스처가 잘 로드되었으면 아이템 아이콘 이미지 컴포넌트에 세팅
@@ -41,6 +53,7 @@ public class EquippedItemSlot : MonoBehaviour
 
         AddIcon.gameObject.SetActive(true);
         EquippedItemIcon.gameObject.SetActive(false);
+        EquippedItemGradeBg.gameObject.SetActive(false);
     }
 
     //일반 인벤토리 아이템 슬롯과 마찬가지로
@@ -51,6 +64,15 @@ public class EquippedItemSlot : MonoBehaviour
         var uiData = new EquipmentUIData();
         uiData.SerialNumber = m_EquippedItemData.SerialNumber;
         uiData.ItemId = m_EquippedItemData.ItemId;
+        if(uiData == null)
+        {
+            uiData.IsEquipped = false;
+        }
+        else
+        {
+            uiData.IsEquipped = true;
+        }
         UIManager.Instance.OpenUI<EquipmentUI>(uiData);
+        
     }
 }

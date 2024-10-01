@@ -25,6 +25,7 @@ public class EquipmentUI : BaseUI
     //아이템 스탯을 표시해줄 텍스트 컴포넌트
     public TextMeshProUGUI AttackPowerAmountTxt;
     public TextMeshProUGUI DefenseAmountTxt;
+    public TextMeshProUGUI EquipBtnTxt; //1)
 
     //EquipmentUiData를 받을 변수
     private EquipmentUIData m_EquipmentUIData;
@@ -50,7 +51,7 @@ public class EquipmentUI : BaseUI
         //아이템ID에서 아이템 등급 추출
         var itemGrade = (ItemGrade)((m_EquipmentUIData.ItemId / 1000) % 10);
         //추출한 아이템 등급 정보로 아이템 등급 이미지를 로드
-        var gradeBgTexture = Resources.Load<Texture2D>($"Texutres.{itemGrade}");
+        var gradeBgTexture = Resources.Load<Texture2D>($"Textures/{itemGrade}");
         if(gradeBgTexture != null)
         {
             ItemGradeBg.sprite = Sprite.Create(gradeBgTexture, new Rect(0, 0, gradeBgTexture.width, gradeBgTexture.height), new Vector2(1f, 1f));
@@ -108,5 +109,51 @@ public class EquipmentUI : BaseUI
         ItemNameTxt.text = itemData.ItemName; //아이템명 셋팅
         AttackPowerAmountTxt.text = $"+{itemData.AttackPower}"; //공격력 표시
         DefenseAmountTxt.text = $"+{itemData.Defense}"; //방어력 표시
+        EquipBtnTxt.text = m_EquipmentUIData.IsEquipped ? "Unequip" : "Equip"; //2)
+    }
+
+    //3) 그리고 (장,탈착) 버튼을 눌렀을 때 호출할 함수
+    public void OnClickEquipBtn()
+    {
+        //UserInventoryData를 가져온다.
+        var userInventoryData = UserDataManager.Instance.GetUserData<UserInventoryData>();
+        //널이면 에러로그
+        if(userInventoryData == null)
+        {
+            Logger.Log("UserInventoryData does not exist.");
+            return;
+        }
+        //장착중이면 탈착
+        if(m_EquipmentUIData.IsEquipped)
+        {
+            //해당 함수는 이후 구현
+            userInventoryData.UnEquipItem(m_EquipmentUIData.SerialNumber, m_EquipmentUIData.ItemId);
+        }
+        else
+        {
+            //장착중이 아니면 장착
+            userInventoryData.EquipItem(m_EquipmentUIData.SerialNumber, m_EquipmentUIData.ItemId);
+        }
+
+        userInventoryData.SaveData(); //유저 인벤토리 데이터에 변화가 생겼으니 저장
+        //아이템 장착 또는 탈착했을 때는 인벤토리UI를 갱신해줘야함.
+
+        //UI매니저를 통해 현재 열려있는 인벤토리 UI가 있으면 받아오겠음.
+        var inventoryUI = UIManager.Instance.GetActiveUI<InventoryUI>() as InventoryUI;
+
+        if(inventoryUI != null) //열려있는 UI화면이 있다면
+        {
+            //장착 여부에 따른 UI처리 함수를 호출해 주겠음
+            if (m_EquipmentUIData.IsEquipped)
+            {
+                inventoryUI.OnUnequipItem(m_EquipmentUIData.ItemId);
+            }
+            else
+            {
+                inventoryUI.OnEquipItem(m_EquipmentUIData.ItemId);
+            }
+        }
+
+        CloseUI(); //게임상의 자연스러운 흐름을 위해 현재 UI화면 닫음
     }
 }

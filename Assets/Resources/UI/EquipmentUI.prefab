@@ -924,6 +924,7 @@ MonoBehaviour:
   ItemNameTxt: {fileID: 2180642332043355331}
   AttackPowerAmountTxt: {fileID: 2180642332867396455}
   DefenseAmountTxt: {fileID: 2180642331270726093}
+  EquipBtnTxt: {fileID: 2180642332428886416}
 --- !u!1 &2180642332043355333
 GameObject:
   m_ObjectHideFlags: 0
@@ -1182,13 +1183,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 2180642332030032983}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
+      - m_Target: {fileID: 1845911944194813589}
+        m_TargetAssemblyTypeName: EquipmentUI, Assembly-CSharp
+        m_MethodName: OnClickEquipBtn
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -1540,7 +1541,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -1.8, y: 12}
-  m_SizeDelta: {x: 170.91736, y: 76.16812}
+  m_SizeDelta: {x: 400, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2180642332428886417
 CanvasRenderer:
@@ -1706,7 +1707,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: ae3ec3f9d7ffb994382f6eb939d10ae1, type: 3}
+  m_Sprite: {fileID: 0}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

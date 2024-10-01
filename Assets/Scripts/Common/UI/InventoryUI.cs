@@ -25,6 +25,8 @@ public class InventoryUI : BaseUI
     public EquippedItemSlot GlovesSlot;
     public EquippedItemSlot AccessorySlot;
 
+    public TextMeshProUGUI AttackPowerAmountTxt;
+    public TextMeshProUGUI DefenseAmountTxt;
 
     //스크롤 뷰를 처리해줄 인피니티 스크롤 변수
     public InfiniteScroll InventoryScrollList;
@@ -36,10 +38,29 @@ public class InventoryUI : BaseUI
     public override void SetInfo(BaseUIData uiData)
     {
         base.SetInfo(uiData);
+
+        SetUserStats(); //3)초기, 장착, 탈착 할때 호출해 줌
+        SetEquippedItems(); //장착된 아이템에 대한 UI처리를 담당할 함수 호출
         SetInventory();
         SortInventory();
-        SetEquippedItems(); //장착된 아이템에 대한 UI처리를 담당할 함수 호출
+    }
 
+    //유저의 스탯 총합을 표시하는 함수
+    private void SetUserStats()
+    {
+        //유저인벤토리데이터를 가져옴
+        var userInventoryData = UserDataManager.Instance.GetUserData<UserInventoryData>();
+        if(userInventoryData == null)
+        {
+            Logger.LogError("UserInventoryData does not exist.");
+            return;
+        }
+
+        //위 UserInventoryData 에서 만든 함수 호출해 스탯 총합에 대한 데이터를 가져오고
+        var userTotalItemStats = userInventoryData.GetUserTotalItemStats();
+        //이를 각 텍스트 컴포넌트에 표시
+        AttackPowerAmountTxt.text = $"+{userTotalItemStats.AttackPower.ToString()}";
+        DefenseAmountTxt.text = $"+{userTotalItemStats.Defense.ToString()}";
     }
 
     void SetInventory()
@@ -55,6 +76,13 @@ public class InventoryUI : BaseUI
             //순회하며 각 아이템에 대해서 아이템 슬롯 인스턴스를 만들어준다.
             foreach (var itemData in userInventoryData.InventoryItemDataList)
             {
+                //스크롤 뷰에 아이템 데이터를 하나씩 추가해 줄 때
+                //만약 장착된 아이템이라면 예외처리를 해주겠음.
+                if(userInventoryData.IsEquipped(itemData.SerialNumber))
+                {
+                    continue;
+                }
+
                 //실제로 슬롯에 있는 데이터를 실제 아이템 데이터를 넣어주기
                 var itemSlotData = new InventoryItemSlotData();
                 itemSlotData.SerialNumber = itemData.SerialNumber;
@@ -223,6 +251,80 @@ public class InventoryUI : BaseUI
             default:
                 break;
         }
+        SortInventory();
+    }
+
+    //아이템 장착을 한 후 UI처리에 대한 함수를 먼저 작성
+    public void OnEquipItem(int itemId)
+    {
+        //UserInventoryData를 가져옴
+        var userInventoryData = UserDataManager.Instance.GetUserData<UserInventoryData>();
+
+        if (userInventoryData == null)
+        {
+            Logger.LogError("UserInventoryData does not exist.");
+            return;
+        }
+        //아이템 종류에 따른 분기 처리
+        var itemType = (ItemType)(itemId / 10000);
+        switch (itemType)
+        {
+            case ItemType.Weapon:
+                WeaponSlot.SetItem(userInventoryData.EquippedWeaponData);
+                break;
+            case ItemType.Shield:
+                ShieldSlot.SetItem(userInventoryData.EquippedShieldData);
+                break;
+            case ItemType.ChestArmor:
+                ChestArmorSlot.SetItem(userInventoryData.EquippedChestArmorData);
+                break;
+            case ItemType.Gloves:
+                GlovesSlot.SetItem(userInventoryData.EquippedGlovesData);
+                break;
+            case ItemType.Boots:
+                BootsSlot.SetItem(userInventoryData.EquippedBootsData);
+                break;
+            case ItemType.Accessory:
+                AccessorySlot.SetItem(userInventoryData.EquippedAccessoryData);
+                break;
+            default:
+                break;
+        }
+        SetUserStats();
+        SetInventory(); //인벤토리를 다시 세팅해주고
+        SortInventory(); //정렬까지 다시
+    }
+
+    //탈착 후 UI 처리에 대한 함수도 작성
+    public void OnUnequipItem(int itemId)
+    {
+        //아이템 종류 추출하고
+        var itemType = (ItemType)(itemId / 10000);
+        switch(itemType)
+        {
+            case ItemType.Weapon:
+                WeaponSlot.ClearItem();
+                break;
+            case ItemType.Shield:
+                ShieldSlot.ClearItem();
+                break;
+            case ItemType.ChestArmor:
+                ChestArmorSlot.ClearItem();
+                break;
+            case ItemType.Gloves:
+                GlovesSlot.ClearItem();
+                break;
+            case ItemType.Boots:
+                BootsSlot.ClearItem();
+                break;
+            case ItemType.Accessory:
+                AccessorySlot.ClearItem();
+                break;
+            default:
+                break;
+        }
+        SetUserStats();
+        SetInventory();
         SortInventory();
     }
 }
