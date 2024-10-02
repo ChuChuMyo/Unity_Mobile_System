@@ -40,6 +40,7 @@ public class DataTableManager : SingletonBehaviour<DataTableManager>
                 //오브젝트 타입이라 지정된 개체의 값을 32비트 부호 있는 정수로 변환
                 //Convert.ToInt32를 사용하여 32비트인 인트로 형변환 시켜주는 문법
                 ChapterNo = Convert.ToInt32(data["chapter_no"]),
+                ChapterName = data["chapter_name"].ToString(),
                 TotalStage = Convert.ToInt32(data["total_stages"]),
                 ChapterRewardGem = Convert.ToInt32(data["chapter_reward_gem"]),
                 ChapterRewardGold = Convert.ToInt32(data["chapter_reward_gold"])
@@ -118,6 +119,7 @@ public class ChapterData
 {
     public int ChapterNo;
     public int TotalStage;
+    public string ChapterName;
     public int ChapterRewardGem;
     public int ChapterRewardGold;
 }

@@ -22,6 +22,7 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
         UserDataList.Add(new UserGoodsData());
         //인벤토리 데이터 - 아이템
         UserDataList.Add(new UserInventoryData());
+        UserDataList.Add(new UserPlayData());
     }
     //모든 유저데이터를 기본 값으로 초기화 하는 함수
     public void SetDefaultUserData() 
