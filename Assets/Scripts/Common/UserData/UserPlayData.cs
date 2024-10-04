@@ -63,7 +63,7 @@ public class UserPlayData : IUserData
     {
         Logger.Log($"{GetType()}::SetDefaultData");
 
-        MaxClearedChapter = 2;
+        MaxClearedChapter = 0;
         SelectedChapter = 1;
     }
 

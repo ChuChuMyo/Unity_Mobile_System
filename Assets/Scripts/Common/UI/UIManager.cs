@@ -1,15 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
+using System;
 public class UIManager : SingletonBehaviour<UIManager>
 {
     //화면을 랜더링할 캔버스 컴포넌트 트랜스폼
     public Transform UICanvasTrs;
     //UI 화면을 이 UI 캔버스 트랜스폼 하위에 위치시켜줘야하기 때문에 필요함.
-
+    public Transform m_ClosedUITrs;
     //UI 화면을 닫을 때 비활성화 시킨 UI 화면들을 위치시켜줄 트랜스폼
-    public Transform ClosedUITrs;
+    //public Transform ClosedUITrs;
+    //페이드 이미지컴포넌트 변수 추가
+    public Image m_Fade; 
     //UI 화면이 열려있을 때 가장 상단에 열려있는 UI
     BaseUI m_FrontUI;
     //현재 열려있는, 즉 활성화 되어있는 UI 화면을 담고 있는 변수(풀)
@@ -17,10 +20,13 @@ public class UIManager : SingletonBehaviour<UIManager>
     //닫혀있는, 즉 비활성화 되어 있는 UI 화면을 담고 있는 변수(풀)
     Dictionary<System.Type, GameObject> m_ClosedUIPool = new Dictionary<System.Type, GameObject>();
 
-    GoodsUI m_GoodsUI;
+    private GoodsUI m_GoodsUI;
     protected override void Init()
     {
         base.Init();
+        //컴포넌트 스케일을 0으로 해서 보이지 않도록
+        m_Fade.transform.localScale = Vector3.zero;
+
         //컴포넌트가 연동된 게임 오브젝트를 찾아서 GoodsUI컴포넌트를 리턴
         m_GoodsUI = FindObjectOfType<GoodsUI>();
         if (!m_GoodsUI)
@@ -92,7 +98,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         //이제 실제로 UI화면을 열고 데이터를 세팅해 준다.
 
         //childCount 하위에 있는 게임 오브젝트 갯수
-        var siblingIdx = UICanvasTrs.childCount - 1;
+        var siblingIdx = UICanvasTrs.childCount - 2;
 
         //UI화면 초기화
         ui.Init(UICanvasTrs);
@@ -141,7 +147,7 @@ public class UIManager : SingletonBehaviour<UIManager>
         m_ClosedUIPool[uiType] = ui.gameObject;
 
         //ClosedUITrs하위로 위치
-        ui.transform.SetParent(ClosedUITrs);
+        ui.transform.SetParent(m_ClosedUITrs);
 
         //최상단 UI널로 초기화
         m_FrontUI = null;
@@ -200,5 +206,41 @@ public class UIManager : SingletonBehaviour<UIManager>
             //굿즈 유아이의 함수를 불러와서 재화를 표시
             m_GoodsUI.SetValues();
         }
+    }
+
+    //페이드 함수
+    public void Fade(Color color, float startAlpha, float endAlpha,float duration, float startDelay, bool deactiveOnFisish, Action onFinish = null)
+    {
+        StartCoroutine(FadeCo(color, startAlpha, endAlpha, duration, startDelay, deactiveOnFisish, onFinish));
+    }
+
+    //페이드 처리 코루틴
+    private IEnumerator FadeCo(Color color, float startAlpha, float endAlpha, float duration, float startDelay, bool deactiveOnFisish, Action onFinish = null)
+    {
+        yield return new WaitForSeconds(startDelay);
+
+        m_Fade.transform.localScale = Vector3.one;
+        m_Fade.color = new Color(color.r, color.g, color.b, startAlpha);
+
+        var startTime = Time.realtimeSinceStartup;
+        while(Time.realtimeSinceStartup - startTime < duration)
+        {
+            m_Fade.color = new Color(color.r, color.g, color.b, Mathf.Lerp(startAlpha, endAlpha, (Time.realtimeSinceStartup - startTime) / duration));
+            yield return null;
+        }
+
+        m_Fade.color = new Color(color.r, color.g, color.b, endAlpha);
+
+        if(deactiveOnFisish)
+        {
+            m_Fade.transform.localScale = Vector3.zero;
+        }
+
+        onFinish?.Invoke(); //페이드 처리가 끝났을 때 수행되길 원하는 로직이 있다면 처리
+    }
+
+    public void CancelFade()
+    {
+        m_Fade.transform.localScale = Vector3.zero;
     }
 }
