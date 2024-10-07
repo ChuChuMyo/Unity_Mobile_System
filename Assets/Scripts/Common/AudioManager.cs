@@ -11,6 +11,8 @@ public enum SFX
     chapter_clear,
     stage_clear,
     ui_button_click,
+    ui_get,
+    ui_increase,
     COUNT,
 }
 

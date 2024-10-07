@@ -72,7 +72,7 @@ public class ChapterListUI : BaseUI
         ChapterScrollList.Clear();
 
         //1번 인덱스 부터 MAX_CHAPTER+1 까지 순회하면서 아이템을 하나씩 추가
-        for (int i = 1; i < GlobalDefine.MAX_CHAPTER+1; i++)
+        for (int i = 1; i < GlobalDefine.MAX_CHAPTER+2; i++)
         {
             var chpaterItemData = new ChapterScrollItemData();
             chpaterItemData.ChapterNO = i;
