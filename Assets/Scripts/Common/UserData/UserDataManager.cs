@@ -23,6 +23,7 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
         //인벤토리 데이터 - 아이템
         UserDataList.Add(new UserInventoryData());
         UserDataList.Add(new UserPlayData());
+        UserDataList.Add(new UserAchievementData());
     }
     //모든 유저데이터를 기본 값으로 초기화 하는 함수
     public void SetDefaultUserData() 
@@ -73,10 +74,8 @@ public class UserDataManager : SingletonBehaviour<UserDataManager>
             PlayerPrefs.SetInt("ExistsSavedData", 1);
         }
     }
-    //여기서 T 오브젝트타입은 찾고자 하는 UserData의 클래스 타입 (class, IUserData)
     public T GetUserData<T>() where T : class, IUserData
     {
-        //타입이 T인 것 중에 첫번째 인스턴스를 리턴하거나 없으면 null리턴
         return UserDataList.OfType<T>().FirstOrDefault();
     }
 }

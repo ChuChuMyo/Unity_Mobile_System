@@ -163,7 +163,7 @@ GameObject:
   - component: {fileID: 8840383910549401495}
   - component: {fileID: 8840383910549401493}
   - component: {fileID: 8840383910549401492}
-  - component: {fileID: 8865170406822958976}
+  - component: {fileID: 8819623673776759662}
   m_Layer: 0
   m_Name: StageClearUI
   m_TagString: Untagged
@@ -230,7 +230,7 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &8865170406822958976
+--- !u!114 &8819623673776759662
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

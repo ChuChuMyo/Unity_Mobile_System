@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using System.Linq;
+using static GlobalDefine;
 
 public class DataTableManager : SingletonBehaviour<DataTableManager>
 {
@@ -14,6 +15,7 @@ public class DataTableManager : SingletonBehaviour<DataTableManager>
         base.Init();
         LoadChapterDataTable();
         LoadItemDataTable();
+        LoadAchievementDataTable();
     }
 
     #region CHAPTER_DATA
@@ -110,9 +112,61 @@ public class DataTableManager : SingletonBehaviour<DataTableManager>
         return ItemDataTable.Where(item => item.ItemId == itemid).FirstOrDefault();
     }
     #endregion
+
+    #region ACHIEVEMENT_DATA
+    private const string ACHIEVEMENT_DATA_TABLE = "AchievementDataTable"; //데이터 테이블 명 상수를 선언
+    //업적 데이터를 담을 리스트 자료구조 선언
+    private List<AchievementData> AchievementDataTable = new List<AchievementData>();
+
+    private void LoadAchievementDataTable()
+    {
+        //csv리더를 이용해서 데이터테이블을 로드해 오겠음.
+        var parsedDataTable = CSVReader.Read($"{DATA_PATH}/{ACHIEVEMENT_DATA_TABLE}");
+
+        //로드한 데이터테이블을 순회하면서
+        //achievementData 인스턴스를 만들고
+        //각 변수를 로드한 데이터로 초기화
+        //변수 초기화가 완료되면 AchievementDataTable 자료구조에 추가
+        foreach(var data in parsedDataTable)
+        {
+            var achievementData = new AchievementData
+            {
+                AchievementType = (AchievementType)Enum.Parse(typeof(AchievementType), data["achievement_type"].ToString()),
+                AchievementName = data["achievement_name"].ToString(),
+                AchievementGoal = Convert.ToInt32(data["achievement_goal"]),
+                AchievementRewardType = (RewardType)Enum.Parse(typeof(RewardType), data["achievement_reward_type"].ToString()),
+                AchievementRewardAmount = Convert.ToInt32(data["achievement_reward_amount"])
+            };
+            AchievementDataTable.Add(achievementData);
+        }
+    }
+
+    public List<AchievementData> GetAchievementDataList()
+    {
+        return AchievementDataTable;
+    }
+
+    //이렇게 로드한 ChapterDataTable에서 찾고자 하는 ChapterData만 가져오는 함수
+    public AchievementData GetAchievementsData(AchievementType achievementType)
+    {
+        //이 컨테이너 안에 있는 아이템 중에서 챕터 넘버가 매개변수 챕터 넘버값과 같을 시 리턴
+        //이 조건에 부합하는 첫 엘리먼트를 리턴하거나 아니면 이 조건에 맞는 엘리먼트가 없을때는 널을 리턴
+        return AchievementDataTable.Where(item => item.AchievementType == achievementType).FirstOrDefault();
+        //이 테이블안에서 어디에있냐[()안에 있는 조건에 맞는 위치 == 조건이 트루일때만]에서 첫번째 값을 반환
+    }
+    #endregion
 }
 
 
+
+public class AchievementData
+{
+    public AchievementType AchievementType;
+    public string AchievementName;
+    public int AchievementGoal;
+    public RewardType AchievementRewardType;
+    public int AchievementRewardAmount;
+}
 
 //챕터 데이터의 각 값을 저장할 수 있도록 만들어야하는 클래스
 public class ChapterData
@@ -122,6 +176,14 @@ public class ChapterData
     public string ChapterName;
     public int ChapterRewardGem;
     public int ChapterRewardGold;
+}
+
+public enum AchievementType
+{
+    CollectGold,
+    ClearChapter1,
+    ClearChapter2,
+    ClearChapter3,
 }
 
 //아이템 관련 클래스와 이넘

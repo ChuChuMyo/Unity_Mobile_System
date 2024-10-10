@@ -83,6 +83,16 @@ public class LobbyUIController : MonoBehaviour
         LobbyManager.Instance.StartInGame();
     }
 
+    public void OnClickAchievementBtn()
+    {
+        Logger.Log($"{GetType()}::OnClickAchievementBtn");
+
+        var uiData = new BaseUIData();
+        UIManager.Instance.OpenUI<AchievementUI>(uiData);
+    }
+    
+
+
     private void Update()
     {
         MandleInput();

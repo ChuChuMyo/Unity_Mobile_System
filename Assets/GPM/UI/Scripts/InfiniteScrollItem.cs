@@ -101,6 +101,7 @@ namespace Gpm.Ui
 
         public virtual void UpdateData(InfiniteScrollData scrollData)
         {
+
         }
 
         internal void SetAxis(Vector2 anchorMin, Vector2 anchorMax, Vector2 pivot)
